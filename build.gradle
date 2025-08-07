@@ -1,0 +1,31 @@
+plugins {
+    id 'java'
+    id 'war' // для того, чтобы собирался как web приложение
+}
+
+group = 'com.example'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+
+    // https://mvnrepository.com/artifact/org.springframework/spring-context
+    implementation("org.springframework:spring-context:5.3.39")
+
+    // https://mvnrepository.com/artifact/org.springframework/spring-webmvc
+    implementation("org.springframework:spring-webmvc:5.3.39")
+    // tomcat
+    implementation 'org.apache.tomcat.embed:tomcat-embed-core:9.0.86'
+    implementation 'org.apache.tomcat.embed:tomcat-embed-jasper:9.0.86'
+    // servlets
+    implementation 'javax.servlet:javax.servlet-api:4.0.1'
+}
+
+test {
+    useJUnitPlatform()
+}
