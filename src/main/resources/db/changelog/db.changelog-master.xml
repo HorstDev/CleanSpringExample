@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.2.xsd">
+
+    <!--Создаем таблицу без order_date-->
+    <changeSet id="1" author="me">
+        <comment>Создание таблицы с заказами без даты</comment>
+        <createTable tableName="orders">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="customer_name" type="VARCHAR(255)"/>
+            <column name="amount" type="NUMERIC(10,2)"/>
+            <column name="vip" type="BOOLEAN"/>
+        </createTable>
+    </changeSet>
+
+    <!--Добавляем order_date-->
+    <changeSet id="2" author="me">
+        <comment>Добавление столбца order_date</comment>
+        <addColumn tableName="orders">
+            <column name="order_date" type="DATE" />
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

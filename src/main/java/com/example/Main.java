@@ -1,6 +1,6 @@
 package com.example;
 
-import com.example.batch.BatchConfig;
+import com.example.batch.AppConfig;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
@@ -12,15 +12,17 @@ import java.util.Random;
 
 public class Main {
 
+    private final static String ORDERS_FILENAME = "orders.csv";
+
     public static void main(String[] args) {
-        ApplicationContext context = new AnnotationConfigApplicationContext(BatchConfig.class);
+        ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
         JobLauncher jobLauncher = context.getBean(JobLauncher.class);
         Job importOrdersJob = context.getBean(Job.class);
 
         Random rand = new Random();
         JobParameters jobParameters = new JobParametersBuilder()
                 .addLong("run.id", rand.nextLong()) // устанавливаем id для каждого запуска
-                .addString("fileName", "orders.csv")
+                .addString("fileName", ORDERS_FILENAME)
                 .toJobParameters();
 
         try {
@@ -28,7 +30,5 @@ public class Main {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-
-        System.out.println("Hello World!");
     }
 }

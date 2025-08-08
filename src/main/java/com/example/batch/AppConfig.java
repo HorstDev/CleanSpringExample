@@ -1,6 +1,7 @@
 package com.example.batch;
 
 import com.example.models.Order;
+import liquibase.integration.spring.SpringLiquibase;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
@@ -9,7 +10,6 @@ import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.support.JobRepositoryFactoryBean;
 import org.springframework.batch.core.step.builder.StepBuilder;
-import org.springframework.batch.core.step.skip.SkipPolicy;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
 import org.springframework.batch.item.database.builder.JdbcBatchItemWriterBuilder;
 import org.springframework.batch.item.file.FlatFileItemReader;
@@ -32,7 +32,12 @@ import javax.sql.DataSource;
 //@EnableWebMvc
 @ComponentScan("com.example") // место, где будут сканироваться компоненты, сервисы и др. бины
 @PropertySource("classpath:application.properties")
-public class BatchConfig {
+public class AppConfig {
+
+    private final String ORDER_READER_NAME = "orderReader";
+
+    @Value("${liquibase.changelogpath}")
+    private String CHANGELOG_PATH;
 
     @Value("${database.url}")
     private String url;
@@ -51,6 +56,15 @@ public class BatchConfig {
         dataSource.setUsername(username);
         dataSource.setPassword(password);
         return dataSource;
+    }
+
+    // Liquibase
+    @Bean
+    public SpringLiquibase liquibase(DataSource dataSource) {
+        SpringLiquibase liquibase = new SpringLiquibase();
+        liquibase.setDataSource(dataSource);
+        liquibase.setChangeLog(CHANGELOG_PATH);
+        return liquibase;
     }
 
     @Bean
@@ -76,9 +90,10 @@ public class BatchConfig {
     @StepScope  // StepScope потому, что бин создается при старте приложения, а параметры к этому моменту еще не созданы
     public FlatFileItemReader<Order> orderReader(@Value("#{jobParameters['fileName']}") String fileName) {
         return new FlatFileItemReaderBuilder<Order>()
-                .name("myReader")//todo константа
+                .name(ORDER_READER_NAME)
                 .resource(new ClassPathResource(fileName))
                 .linesToSkip(1) // пропускаем заголовок
+                .encoding("UTF-8")
                 .delimited()
                 .names("id", "customerName", "orderDate", "amount")
                 .fieldSetMapper(new OrderFieldsMapper())
