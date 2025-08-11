@@ -34,6 +34,9 @@ import javax.sql.DataSource;
 @PropertySource("classpath:application.properties")
 public class AppConfig {
 
+    public static final String IMPORT_ORDERS_STEP = "importOrdersStep";
+    public static final String IMPORT_ORDERS_JOB = "importOrdersJob";
+
     private final String ORDER_READER_NAME = "orderReader";
 
     @Value("${liquibase.changelogpath}")
@@ -124,7 +127,7 @@ public class AppConfig {
     public Step importOrdersStep(FlatFileItemReader<Order> orderReader, JdbcBatchItemWriter<Order> orderWriter,
                                  JobRepository jobRepository, PlatformTransactionManager transactionManager,
                                  OrderProcessor orderProcessor, OrderSkipPolicy orderSkipPolicy) throws Exception {
-        return new StepBuilder("importOrdersStep")
+        return new StepBuilder(IMPORT_ORDERS_STEP)
                 .repository(jobRepository)
                 .transactionManager(transactionManager)
                 // Тут указываем типы, из которого будет читаться и в который записываться и размер чанка для step
@@ -139,7 +142,7 @@ public class AppConfig {
 
     @Bean
     public Job importOrdersJob(Step importOrdersStep, JobRepository jobRepository) {
-        return new JobBuilder("importOrdersJob")
+        return new JobBuilder(IMPORT_ORDERS_JOB)
                 .repository(jobRepository)
                 .start(importOrdersStep)
                 .build();

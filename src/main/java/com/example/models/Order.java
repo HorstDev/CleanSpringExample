@@ -1,11 +1,13 @@
 package com.example.models;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 
-@Data
+@Setter
+@Getter
 @Builder
 public class Order {
     private Long id;
